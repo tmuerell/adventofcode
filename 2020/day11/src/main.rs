@@ -52,47 +52,47 @@ impl Area {
         }
     }
 
+    fn sees_occupied(&self, row: i64, col: i64, rf : i64, cf : i64) -> bool {
+        let mut r = row;
+        let mut c = col;
+        loop {
+            r += rf;
+            c += cf;
+            match self.seat(r, c) {
+                None => break,
+                Some(s) if s == State::OccupiedSeat => return true,
+                Some(s) if s == State::EmptySeat => return false,
+                Some(_) => {}
+            }
+        }
+        return false;
+    }
+
     fn count_occupied(&self, row: i64, col: i64) -> usize {
         let mut c = 0;
-        if let Some(s) = self.seat(row - 1, col - 1) {
-            if s == State::OccupiedSeat {
-                c += 1;
-            }
+        if self.sees_occupied(row, col, -1, -1) {
+            c += 1;
         }
-        if let Some(s) = self.seat(row - 1, col) {
-            if s == State::OccupiedSeat {
-                c += 1;
-            }
+        if self.sees_occupied(row, col, -1, 0) {
+            c += 1;
         }
-        if let Some(s) = self.seat(row - 1, col + 1) {
-            if s == State::OccupiedSeat {
-                c += 1;
-            }
+        if self.sees_occupied(row, col, -1, 1) {
+            c += 1;
         }
-        if let Some(s) = self.seat(row, col - 1) {
-            if s == State::OccupiedSeat {
-                c += 1;
-            }
+        if self.sees_occupied(row, col, 0, -1) {
+            c += 1;
         }
-        if let Some(s) = self.seat(row, col + 1) {
-            if s == State::OccupiedSeat {
-                c += 1;
-            }
+        if self.sees_occupied(row, col, 0, 1) {
+            c += 1;
         }
-        if let Some(s) = self.seat(row + 1, col - 1) {
-            if s == State::OccupiedSeat {
-                c += 1;
-            }
+        if self.sees_occupied(row, col, 1, -1) {
+            c += 1;
         }
-        if let Some(s) = self.seat(row + 1, col) {
-            if s == State::OccupiedSeat {
-                c += 1;
-            }
+        if self.sees_occupied(row, col, 1, 0) {
+            c += 1;
         }
-        if let Some(s) = self.seat(row + 1, col + 1) {
-            if s == State::OccupiedSeat {
-                c += 1;
-            }
+        if self.sees_occupied(row, col, 1, 1) {
+            c += 1;
         }
         c
     }
@@ -140,7 +140,7 @@ fn main() {
                 if a.seat(r, c).unwrap() == State::EmptySeat && a.count_occupied(r, c) == 0 {
                     b.set(r, c, State::OccupiedSeat);
                 }
-                if a.seat(r, c).unwrap() == State::OccupiedSeat && a.count_occupied(r, c) >= 4 {
+                if a.seat(r, c).unwrap() == State::OccupiedSeat && a.count_occupied(r, c) >= 5 {
                     b.set(r, c, State::EmptySeat);
                 }
             }
