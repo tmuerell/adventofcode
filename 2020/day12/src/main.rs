@@ -3,14 +3,6 @@ use std::io::{BufRead, BufReader};
 use std::str::FromStr;
 
 #[derive(Clone, Debug, PartialEq)]
-enum LookDirection {
-    North,
-    South,
-    East,
-    West
-}
-
-#[derive(Clone, Debug, PartialEq)]
 enum Move {
     North,
     South,
@@ -63,57 +55,66 @@ fn main() {
 
     let s : Vec<Step> = r.lines().map(|s| Step::from_str(&s.unwrap()).unwrap()).collect();
 
-    let mut dir = LookDirection::East;
-    let mut x = 0;
-    let mut y = 0;
+    let mut x : i64 = 0;
+    let mut y : i64  = 0;
+    let mut wpx : i64  = 10;
+    let mut wpy : i64  = 1;
 
     for step in s {
         match step.moove {
-            Move::East => x+=step.arg,
-            Move::North => y+=step.arg,
-            Move::West => x-=step.arg,
-            Move::South => y-=step.arg,
+            Move::East => wpx+=step.arg,
+            Move::North => wpy+=step.arg,
+            Move::West => wpx-=step.arg,
+            Move::South => wpy-=step.arg,
             Move::Left => {
-                match (dir, step.arg) {
-                    (LookDirection::East, 90) => dir = LookDirection::North,
-                    (LookDirection::East, 180) => dir = LookDirection::West,
-                    (LookDirection::East, 270) => dir = LookDirection::South,
-                    (LookDirection::North, 90) => dir = LookDirection::West,
-                    (LookDirection::North, 180) => dir = LookDirection::South,
-                    (LookDirection::North, 270) => dir = LookDirection::East,
-                    (LookDirection::West, 90) => dir = LookDirection::South,
-                    (LookDirection::West, 180) => dir = LookDirection::East,
-                    (LookDirection::West, 270) => dir = LookDirection::North,
-                    (LookDirection::South, 90) => dir = LookDirection::East,
-                    (LookDirection::South, 180) => dir = LookDirection::North,
-                    (LookDirection::South, 270) => dir = LookDirection::West,
-                    (_, _) => panic!("not supported")
+                match step.arg {
+                    90 => {
+                        let x = wpx;
+                        let y = wpy;
+                        wpx = -y;
+                        wpy = x;
+                    }
+                    180 => {
+                        let x = wpx;
+                        let y = wpy;
+                        wpx = -x;
+                        wpy = -y;
+                    }
+                    270 => {
+                        let x = wpx;
+                        let y = wpy;
+                        wpx = y;
+                        wpy = -x;
+                    }
+                    _ => panic!("not supported")
                 }
             },
             Move::Right => {
-                match (dir, step.arg) {
-                    (LookDirection::East, 90) => dir = LookDirection::South,
-                    (LookDirection::East, 180) => dir = LookDirection::West,
-                    (LookDirection::East, 270) => dir = LookDirection::North,
-                    (LookDirection::North, 90) => dir = LookDirection::East,
-                    (LookDirection::North, 180) => dir = LookDirection::South,
-                    (LookDirection::North, 270) => dir = LookDirection::West,
-                    (LookDirection::West, 90) => dir = LookDirection::North,
-                    (LookDirection::West, 180) => dir = LookDirection::East,
-                    (LookDirection::West, 270) => dir = LookDirection::South,
-                    (LookDirection::South, 90) => dir = LookDirection::West,
-                    (LookDirection::South, 180) => dir = LookDirection::North,
-                    (LookDirection::South, 270) => dir = LookDirection::East,
-                    (_, _) => panic!("not supported")
+                match step.arg {
+                    90 => {
+                        let x = wpx;
+                        let y = wpy;
+                        wpx = y;
+                        wpy = -x;
+                    }
+                    180 => {
+                        let x = wpx;
+                        let y = wpy;
+                        wpx = -x;
+                        wpy = -y;
+                    }
+                    270 => {
+                        let x = wpx;
+                        let y = wpy;
+                        wpx = -y;
+                        wpy = x;
+                    }
+                    _ => panic!("not supported")
                 }
             },
             Move::Forward => {
-                match dir {
-                    LookDirection::East => x += step.arg,
-                    LookDirection::North => y += step.arg,
-                    LookDirection::West => x -= step.arg,
-                    LookDirection::South => y -= step.arg
-                }
+                    x += wpx*step.arg;
+                    y += wpy*step.arg;
             }
         }
     }
